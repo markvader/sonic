@@ -6,5 +6,6 @@
   "requirements": ["herolabsapi==0.3.6"],
   "codeowners": ["@markvader"],
   "iot_class": "cloud_polling",
-  "loggers": ["sonic"]
+  "loggers": ["sonic"],
+  "version": "2022.6.0"
 }
