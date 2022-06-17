@@ -22,6 +22,7 @@ from .entity import SonicEntity
 
 WATER_ICON = "mdi:water"
 GAUGE_ICON = "mdi:gauge"
+BATTERY_ICON = "mdi:battery"
 NAME_FLOW_RATE = "Water Flow Rate"
 NAME_WATER_TEMPERATURE = "Water Temperature"
 NAME_WATER_PRESSURE = "Water Pressure"
@@ -120,6 +121,7 @@ class SonicPressureSensor(SonicEntity, SensorEntity):
 class SonicBatterySensor(SonicEntity, SensorEntity):
     """Monitors the battery state for battery-powered devices or returns external_power_supply if externally powered."""
 
+    _attr_icon = BATTERY_ICON
     _attr_native_unit_of_measurement = "battery"
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
 
