@@ -133,7 +133,7 @@ class SonicDeviceDataUpdateCoordinator(DataUpdateCoordinator):
 
     @property
     def sonic_status(self) -> str:
-        """Return the any sonic status message"""
+        """Return any sonic status message"""
         return self._device_information["status"]
 
     @property
