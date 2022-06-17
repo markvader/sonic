@@ -23,6 +23,9 @@ from .entity import SonicEntity
 WATER_ICON = "mdi:water"
 GAUGE_ICON = "mdi:gauge"
 BATTERY_ICON = "mdi:battery"
+TIMER_ICON = "mdi:timer"
+VOLUME_ICON = "mdi:cup-water"
+VALVE_ICON = "mdi:valve"
 NAME_FLOW_RATE = "Water Flow Rate"
 NAME_WATER_TEMPERATURE = "Water Temperature"
 NAME_WATER_PRESSURE = "Water Pressure"
@@ -140,6 +143,8 @@ class SonicValveStateSensor(SonicEntity, SensorEntity):
     """Return the current valve state
        Options are: 'open, closed, opening, closing, faulty, pressure_test, requested_open, requested_closed' """
 
+    _attr_icon = VALVE_ICON
+
     def __init__(self, device):
         """Initialize the current valve state sensor."""
         super().__init__("valve_state", NAME_VALVE_STATE, device)
@@ -170,6 +175,7 @@ class SonicAutoShutOffEnabledSensor(SonicEntity, SensorEntity):
 class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
     """Return the auto_shut_off_time_limit state"""
 
+    _attr_icon = TIMER_ICON
     _attr_native_unit_of_measurement = TIME_MINUTES
 
     def __init__(self, device):
@@ -186,6 +192,7 @@ class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
 class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
     """Return the auto_shut_off_volume_limit state"""
 
+    _attr_icon = VOLUME_ICON
     _attr_native_unit_of_measurement = VOLUME_LITERS
 
     def __init__(self, device):
