@@ -20,7 +20,7 @@ from .device import SonicDeviceDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[str] = ["switch", "sensor", "binary_sensor"]
+PLATFORMS: list[str] = ["switch", "sensor"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Sonic Water Shut-off Valve from a config entry."""
