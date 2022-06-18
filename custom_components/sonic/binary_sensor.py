@@ -13,7 +13,7 @@ from .const import DOMAIN as SONIC_DOMAIN
 from .device import SonicDeviceDataUpdateCoordinator
 from .entity import SonicEntity
 
-NAME_AUTO_SHUT_OFF_ENABLED = "Auto Shut Off Enabled Status"
+NAME_AUTO_SHUT_OFF_ENABLED = "Auto Shut Off Enabled"
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -33,7 +33,7 @@ async def async_setup_entry(
 class SonicAutoShutOffEnabledSensor(SonicEntity, BinarySensorEntity):
     """Binary sensor that reports if the auto shut off feature is enabled."""
 
-    _attr_device_class = BinarySensorDeviceClass.RUNNING
+    _attr_device_class = BinarySensorDeviceClass
 
     def __init__(self, device):
         """Initialize the pending alerts binary sensor."""
