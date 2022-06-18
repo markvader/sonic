@@ -31,6 +31,7 @@ NAME_WATER_TEMPERATURE = "Water Temperature"
 NAME_WATER_PRESSURE = "Water Pressure"
 NAME_BATTERY = "Battery"
 NAME_VALVE_STATE = "Current Valve State"
+NAME_AUTO_SHUT_OFF_ENABLED = "Auto Shut Off Enabled Status"
 NAME_AUTO_SHUT_OFF_TIME_LIMIT = "Auto Shut Off Time Limit"
 NAME_AUTO_SHUT_OFF_VOLUME_LIMIT = "Auto Shut Off Volume Limit"
 
@@ -52,6 +53,7 @@ async def async_setup_entry(
                 SonicPressureSensor(device),
                 SonicBatterySensor(device),
                 SonicValveStateSensor(device),
+                SonicAutoShutOffEnabledSensor(device),
                 SonicAutoShutOffTimeLimitSensor(device),
                 SonicAutoShutOffVolumeLimitSensor(device),
             ]
@@ -154,6 +156,20 @@ class SonicValveStateSensor(SonicEntity, SensorEntity):
         if not self._device.last_known_valve_state:
             return None
         return self._device.last_known_valve_state
+
+
+class SonicAutoShutOffEnabledSensor(SonicEntity, SensorEntity):
+    """Return the auto_shut_off_enabled state"""
+
+    def __init__(self, device):
+        """Initialize the auto_shut_off_enabled sensor."""
+        super().__init__("auto_shut_off_enabled", NAME_AUTO_SHUT_OFF_ENABLED, device)
+        self._state: bool = None
+
+    @property
+    def native_value(self) -> bool | None:
+        """Return the auto_shut_off_enabled state."""
+        return self._device.auto_shut_off_enabled
 
 
 class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
