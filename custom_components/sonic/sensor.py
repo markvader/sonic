@@ -12,13 +12,15 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     VOLUME_LITERS,
     TIME_MINUTES,
+    VOLUME_LITERS,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN as SONIC_DOMAIN
+from .const import DOMAIN as SONIC_DOMAIN, LOGGER
 from .device import SonicDeviceDataUpdateCoordinator
-from .entity import SonicEntity
+from .property import PropertyDataUpdateCoordinator
+from .entity import SonicEntity, PropertyEntity
 
 WATER_ICON = "mdi:water"
 GAUGE_ICON = "mdi:gauge"
@@ -31,9 +33,11 @@ NAME_WATER_TEMPERATURE = "Water Temperature"
 NAME_WATER_PRESSURE = "Water Pressure"
 NAME_BATTERY = "Battery"
 NAME_VALVE_STATE = "Current Valve State"
-NAME_AUTO_SHUT_OFF_ENABLED = "Auto Shut Off Enabled Status"
+NAME_DEVICE_STATUS = "Sonic Status Message"
 NAME_AUTO_SHUT_OFF_TIME_LIMIT = "Auto Shut Off Time Limit"
 NAME_AUTO_SHUT_OFF_VOLUME_LIMIT = "Auto Shut Off Volume Limit"
+NAME_LONG_FLOW_NOTIFICATION_DELAY = "Long Flow Notification Time Delay"
+NAME_HIGH_VOLUME_THRESHOLD_LITRES = "High Volume Notification Threshold"
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -53,9 +57,20 @@ async def async_setup_entry(
                 SonicPressureSensor(device),
                 SonicBatterySensor(device),
                 SonicValveStateSensor(device),
-                SonicAutoShutOffEnabledSensor(device),
+                SonicDeviceStatusSensor(device),
                 SonicAutoShutOffTimeLimitSensor(device),
                 SonicAutoShutOffVolumeLimitSensor(device),
+            ]
+        )
+    """Set up the Property sensors from config entry."""
+    properties: list[PropertyDataUpdateCoordinator] = hass.data[SONIC_DOMAIN][
+        config_entry.entry_id
+    ]["properties"]
+    for property in properties:
+        entities.extend(
+            [
+                PropertyLongFlowNotificationDelay(property),
+                PropertyHighVolumeNotificationThresholdLitres(property),
             ]
         )
     async_add_entities(entities)
@@ -158,18 +173,20 @@ class SonicValveStateSensor(SonicEntity, SensorEntity):
         return self._device.last_known_valve_state
 
 
-class SonicAutoShutOffEnabledSensor(SonicEntity, SensorEntity):
-    """Return the auto_shut_off_enabled state"""
+class SonicDeviceStatusSensor(SonicEntity, SensorEntity):
+    """Return any sonic status message"""
 
     def __init__(self, device):
-        """Initialize the auto_shut_off_enabled sensor."""
-        super().__init__("auto_shut_off_enabled", NAME_AUTO_SHUT_OFF_ENABLED, device)
-        self._state: bool = None
+        """Initialize the device status sensor."""
+        super().__init__("device_status", NAME_DEVICE_STATUS, device)
+        self._state: str = None
 
     @property
-    def native_value(self) -> bool | None:
-        """Return the auto_shut_off_enabled state."""
-        return self._device.auto_shut_off_enabled
+    def native_value(self) -> str | None:
+        """Return the device status state."""
+        if not self._device.sonic_status:
+            return None
+        return self._device.sonic_status
 
 
 class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
@@ -185,7 +202,7 @@ class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
 
     @property
     def native_value(self) -> int | None:
-        """Return the auto_shut_off_time_limit state in mins."""
+        """Return the auto_shut_off_time_limit state in minutes."""
         return round((self._device.auto_shut_off_time_limit)/60)
 
 
@@ -204,3 +221,35 @@ class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
     def native_value(self) -> int | None:
         """Return the auto_shut_off_volume_limit state."""
         return round((self._device.auto_shut_off_volume_limit)/1000)
+
+class PropertyLongFlowNotificationDelay(PropertyEntity, SensorEntity):
+    """Return the long flow notification delay in minutes at property"""
+
+    _attr_icon = TIMER_ICON
+    _attr_native_unit_of_measurement = TIME_MINUTES
+
+    def __init__(self, property):
+        """Initialize the property_long_flow_notification_delay_mins sensor."""
+        super().__init__("property_long_flow_notification_delay_mins", NAME_LONG_FLOW_NOTIFICATION_DELAY, property)
+        self._state: int = None
+
+    @property
+    def native_value(self) -> int | None:
+        """Return the property_long_flow_notification_delay in minutes."""
+        return self._device.property_long_flow_notification_delay_mins
+
+class PropertyHighVolumeNotificationThresholdLitres(PropertyEntity, SensorEntity):
+    """Return the high_volume_threshold_litres at property"""
+
+    _attr_icon = TIMER_ICON
+    _attr_native_unit_of_measurement = VOLUME_LITERS
+
+    def __init__(self, property):
+        """Initialize the property_high_volume_threshold_litres sensor."""
+        super().__init__("property_high_volume_threshold_litres", NAME_HIGH_VOLUME_THRESHOLD_LITRES, property)
+        self._state: int = None
+
+    @property
+    def native_value(self) -> int | None:
+        """Return the property_high_volume_threshold_litres."""
+        return self._device.property_high_volume_threshold_litres

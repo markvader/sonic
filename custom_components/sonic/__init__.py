@@ -17,10 +17,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import CLIENT, DOMAIN
 from .device import SonicDeviceDataUpdateCoordinator
+from .property import PropertyDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[str] = ["switch", "sensor"]
+PLATFORMS: list[str] = ["switch", "sensor", "binary_sensor"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Sonic Water Shut-off Valve from a config entry."""
@@ -43,8 +44,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         for device in sonic_data["data"]
     ]
 
-    tasks = [device.async_refresh() for device in devices]
-    await asyncio.gather(*tasks)
+    sonic_task = [device.async_refresh() for device in devices]
+
+    property_data = await client.property.async_get_all_property_details()
+
+    _LOGGER.debug("Sonic property data information: %s", property_data)
+
+    hass.data[DOMAIN][entry.entry_id]["properties"] = properties = [
+        PropertyDataUpdateCoordinator(hass, client, property["id"])
+        for property in property_data["data"]
+    ]
+
+    property_task = [property.async_refresh() for property in properties]
+
+    await asyncio.gather(*sonic_task, *property_task)
 
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 
