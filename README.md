@@ -6,6 +6,9 @@ This is an early beta version of a custom integration for Sonic smart water shut
 It utilises the [herolabsapi python library](https://pypi.org/project/herolabsapi/) that I have
  written to interact with Sonic devices using the official Hero Labs API.
 
+# Integration Development
+[Full commit history](https://github.com/markvader/HAcore/tree/sonic-dev/homeassistant/components/sonic) 
+
 # Installation
 
 Ideally this will be adopted as an inbuilt integration, however while development and testing are 
