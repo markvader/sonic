@@ -3,9 +3,9 @@
   "name": "Sonic (Hero Labs)",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/sonic",
-  "requirements": ["herolabsapi==0.3.7"],
+  "requirements": ["herolabsapi==0.3.9"],
   "codeowners": ["@markvader"],
   "iot_class": "cloud_polling",
   "loggers": ["sonic"],
-  "version": "v0.1.0-beta"
+  "version": "v0.1.1-beta"
 }
