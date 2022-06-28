@@ -13,6 +13,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN as SONIC_DOMAIN
 from .device import SonicDeviceDataUpdateCoordinator
+from .property import PropertyDataUpdateCoordinator
 from .entity import SonicEntity, PropertyEntity
 
 async def async_setup_entry(
@@ -37,6 +38,7 @@ async def async_setup_entry(
         entities.extend(
             [
                 AutoShutOffSwitch(property),
+                PressureTestsEnabled(property)
             ]
         )
 
@@ -49,7 +51,7 @@ class SonicSwitch(SonicEntity, SwitchEntity):
     def __init__(self, device: SonicDeviceDataUpdateCoordinator) -> None:
         """Initialize the Sonic switch."""
         super().__init__("shutoff_valve", "Shutoff Valve", device)
-        self._state = self._device.last_known_valve_state == "open"
+        self._state = self._device.last_known_valve_state is "open"
 
     @property
     def is_on(self) -> bool:
@@ -78,7 +80,7 @@ class SonicSwitch(SonicEntity, SwitchEntity):
     @callback
     def async_update_state(self) -> None:
         """Retrieve the latest valve state and update the state machine."""
-        self._state = self._device.last_known_valve_state == "open"
+        self._state = self._device.last_known_valve_state is "open"
         self.async_write_ha_state()
 
     async def async_added_to_hass(self):
@@ -88,6 +90,7 @@ class SonicSwitch(SonicEntity, SwitchEntity):
 
 class AutoShutOffSwitch(PropertyEntity, SwitchEntity):
     """Switch class for the Property AutoShutOff."""
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, device: PropertyDataUpdateCoordinator) -> None:
         """Initialize the Property AutoShutOff switch."""
@@ -101,7 +104,7 @@ class AutoShutOffSwitch(PropertyEntity, SwitchEntity):
 
     @property
     def icon(self):
-        """Return the icon to use for the valve."""
+        """Return the icon to use for the switch."""
         if self.is_on:
             return "mdi:auto-fix"
         return "mdi:exclamation-thick"
@@ -122,6 +125,51 @@ class AutoShutOffSwitch(PropertyEntity, SwitchEntity):
     def async_update_state(self) -> None:
         """Retrieve the latest switch state and update the state machine."""
         self._state = self._device.property_auto_shut_off == True
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        """When entity is added to hass."""
+        self.async_on_remove(self._device.async_add_listener(self.async_update_state))
+
+
+class PressureTestsEnabled(PropertyEntity, SwitchEntity):
+    """Switch class for the Property pressure_tests_enabled."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, device: PropertyDataUpdateCoordinator) -> None:
+        """Initialize the Property Pressure Tests Enabled switch."""
+        super().__init__("pressure_tests_enabled", "Pressure Tests Function", device)
+        self._state = self._device.property_pressure_tests_enabled == True
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if the Pressure Tests Enabled is enabled."""
+        return self._state
+
+    @property
+    def icon(self):
+        """Return the icon to use for the switch."""
+        if self.is_on:
+            return "mdi:auto-fix"
+        return "mdi:exclamation-thick"
+
+    async def async_turn_on(self, **kwargs) -> None:
+        """Turn on the Pressure Tests Enabled Function"""
+        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'pressure_tests_enabled': True})
+        self._state = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        """Turn off the Pressure Tests Enabled Function"""
+        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'pressure_tests_enabled': False})
+        self._state = False
+        self.async_write_ha_state()
+
+    @callback
+    def async_update_state(self) -> None:
+        """Retrieve the latest switch state and update the state machine."""
+        self._state = self._device.property_pressure_tests_enabled == True
         self.async_write_ha_state()
 
     async def async_added_to_hass(self):

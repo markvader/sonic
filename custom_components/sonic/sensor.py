@@ -1,5 +1,7 @@
 """The Sonic Water Shut-off Valve integration."""
 from __future__ import annotations
+from datetime import datetime
+import pytz
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -15,6 +17,7 @@ from homeassistant.const import (
     VOLUME_LITERS,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN as SONIC_DOMAIN, LOGGER
@@ -38,6 +41,7 @@ NAME_AUTO_SHUT_OFF_TIME_LIMIT = "Auto Shut Off Time Limit"
 NAME_AUTO_SHUT_OFF_VOLUME_LIMIT = "Auto Shut Off Volume Limit"
 NAME_LONG_FLOW_NOTIFICATION_DELAY = "Long Flow Notification Time Delay"
 NAME_HIGH_VOLUME_THRESHOLD_LITRES = "High Volume Notification Threshold"
+NAME_TELEMETRYTIME = "Telemetry Data Timestamp"
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -56,6 +60,7 @@ async def async_setup_entry(
                 SonicTemperatureSensor(device),
                 SonicPressureSensor(device),
                 SonicBatterySensor(device),
+                SonicTelemetryTime(device),
                 SonicValveStateSensor(device),
                 SonicDeviceStatusSensor(device),
                 SonicAutoShutOffTimeLimitSensor(device),
@@ -154,6 +159,29 @@ class SonicBatterySensor(SonicEntity, SensorEntity):
         return self._device.battery_state
 
 
+class SonicTelemetryTime(SonicEntity, SensorEntity):
+    """Returns time that the telemetry data was captured at by sonic."""
+
+    _attr_icon = TIMER_ICON
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    def __init__(self, device):
+        """Initialize the telemetry time sensor."""
+        super().__init__("telemetry_time", NAME_TELEMETRYTIME, device)
+        self._state: str = None
+
+    @property
+    def native_value(self) -> str | None:
+        """Return the current telemetry time state."""
+        telemetry_timestamp = self._device.last_heard_from_time
+        # telemetry_timezone = self._device.property_timezone
+        timezone = pytz.timezone("Europe/London")
+        telemetry_datetime = datetime.fromtimestamp(telemetry_timestamp, timezone)
+        return telemetry_datetime
+
+
 class SonicValveStateSensor(SonicEntity, SensorEntity):
     """Return the current valve state
        Options are: 'open, closed, opening, closing, faulty, pressure_test, requested_open, requested_closed' """
@@ -168,13 +196,15 @@ class SonicValveStateSensor(SonicEntity, SensorEntity):
     @property
     def native_value(self) -> str | None:
         """Return the current valve state state."""
-        if not self._device.last_known_valve_state:
+        if not self._device.last_heard_from_time:
             return None
         return self._device.last_known_valve_state
 
 
 class SonicDeviceStatusSensor(SonicEntity, SensorEntity):
     """Return any sonic status message"""
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
         """Initialize the device status sensor."""
@@ -194,6 +224,7 @@ class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
 
     _attr_icon = TIMER_ICON
     _attr_native_unit_of_measurement = TIME_MINUTES
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
         """Initialize the auto_shut_off_time_limit sensor."""
@@ -211,6 +242,7 @@ class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
 
     _attr_icon = VOLUME_ICON
     _attr_native_unit_of_measurement = VOLUME_LITERS
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
         """Initialize the auto_shut_off_volume_limit sensor."""
@@ -227,6 +259,7 @@ class PropertyLongFlowNotificationDelay(PropertyEntity, SensorEntity):
 
     _attr_icon = TIMER_ICON
     _attr_native_unit_of_measurement = TIME_MINUTES
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, property):
         """Initialize the property_long_flow_notification_delay_mins sensor."""
@@ -243,6 +276,7 @@ class PropertyHighVolumeNotificationThresholdLitres(PropertyEntity, SensorEntity
 
     _attr_icon = TIMER_ICON
     _attr_native_unit_of_measurement = VOLUME_LITERS
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, property):
         """Initialize the property_high_volume_threshold_litres sensor."""

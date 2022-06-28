@@ -19,9 +19,11 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     session = async_get_clientsession(hass)
     try:
+        LOGGER.debug("logging in")
         api = await Client.async_login(
             data[CONF_USERNAME], data[CONF_PASSWORD], session=session
         )
+        LOGGER.debug("logged in")
     except InvalidCredentialsError as request_error:
         LOGGER.error("Error connecting to the Sonic API: %s", request_error)
         raise CannotConnect from request_error
