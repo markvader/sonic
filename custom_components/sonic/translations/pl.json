@@ -1,0 +1,25 @@
+
+{
+    "config": {
+        "abort": {
+            "already_configured": "Urządzenie jest już skonfigurowane"
+        },
+        "error": {
+            "cannot_connect": "Błąd połączenia",
+            "invalid_auth": "Błąd autoryzacji",
+            "unknown": "Nieoczekiwany błąd"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Hasło",
+                    "username": "Użytkownik"
+                },
+                "data_description": {
+                    "username": "Użytkownik Hero Labs, zazwyczaj adres e-mail."
+                },
+                "description": "Zaloguj się do konta Hero Labs."
+            }
+        }
+   }
+}
