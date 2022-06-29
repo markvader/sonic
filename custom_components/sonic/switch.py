@@ -111,13 +111,13 @@ class AutoShutOffSwitch(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the AutoShutOff Function"""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'auto_shut_off': True})
+        await self._device.api_client.property.async_update_property_settings(self._device.id, {'auto_shut_off': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Close the valve."""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'auto_shut_off': False})
+        await self._device.api_client.property.async_update_property_settings(self._device.id, {'auto_shut_off': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -156,13 +156,13 @@ class PressureTestsEnabled(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Pressure Tests Enabled Function"""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'pressure_tests_enabled': True})
+        await self._device.api_client.property.async_update_property_settings(self._device.id, {'pressure_tests_enabled': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Pressure Tests Enabled Function"""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, json={'pressure_tests_enabled': False})
+        await self._device.api_client.property.async_update_property_settings(self._device.id, {'pressure_tests_enabled': False})
         self._state = False
         self.async_write_ha_state()
 
