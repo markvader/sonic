@@ -24,6 +24,8 @@ class PropertyDataUpdateCoordinator(DataUpdateCoordinator):
         self.api_client: Client = api_client
         self._sonic_property_id: str = property_id
         self._property_information: dict[str, Any] = {}
+        self._property_settings: dict[str, Any] = {}
+        self._property_notification_settings: dict[str, Any] = {}
         super().__init__(
             hass,
             LOGGER,
