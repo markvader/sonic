@@ -1,10 +1,10 @@
 # Home Assistant Sonic custom integration
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/markvader/sonic_hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 
-This is an early beta version of a custom integration for Sonic smart water shutoff valve 
+This is an beta version of a custom integration for Sonic smart water shutoff valve, more features are still to be added.  Additionally I am exploring local access to the sonic device to remove the need to communicate with the cloud API.
 
 It utilises the [herolabsapi python library](https://pypi.org/project/herolabsapi/) that I have
- written to interact with Sonic devices using the official Hero Labs API.
+ written to interact with Sonic devices using the official Hero Labs API (cloud based).
 
 # Integration Development
 [Full commit history](https://github.com/markvader/HAcore/tree/sonic-dev/homeassistant/components/sonic) 
