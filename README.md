@@ -12,28 +12,22 @@ It utilises the [herolabsapi python library](https://pypi.org/project/herolabsap
 # Installation
 
 Ideally this will be adopted as an inbuilt integration, however while development and testing are 
-ongoing the recommended way to install `sonic_hacs` is through [HACS](https://hacs.xyz/).
-
-While this is in active development and probably got a few bugs I will be keeping this within HACS as a 
-custom repository and not yet available in the main HACS listing.
+ongoing the recommended way to install `Sonic` is through [HACS](https://hacs.xyz/).
 
 ## To install it: 
 1. Open `HACS` within `Home Assistant`
-2. Go to any of the sections (`integrations`, `frontend`, `automation`).
-3. Click on the 3 dots in the top right corner.
-4. Select `Custom repositories`
-5. Add the repository URL `https://github.com/markvader/sonic_hacs`
-   and select the `integrations` category.
-7. Click the `ADD` button.
-8. Then `restart Home Assistant`
-9. Go to `Settings` / `Devices & Services (Integrations Tab)` / `Add Integration` 
-and search for `Sonic (Hero Labs)`
+2. Click the `Integrations` section, then `Explore and Download Repositories` button.
+3. Search for `Sonic by markvader` then click on the `download` button
+4. Select the latest version (or latest beta version) and download
+5. Then `restart Home Assistant`
+6. Go to `Settings` / `Devices & Services (Integrations Tab)` / `Add Integration` 
+and search for `Sonic (Hero Labs)` then follow the configuration steps below
 
 ## Configuration
 
-10. Log into your Hero Labs account (Email & Password).
-11. The first Sonic device on your account should be discovered, 
-and you can assign it to an area within your home.
+7. Log into the integration with your Hero Labs account details (Email & Password).
+8. Any sonic devices on your account should be discovered, an additional device will be setup for each property registered to your account (e.g. if you have 2 properties with a sonic device at each property you will have 4 devices setup).
+9. You can assign each device to an area within your home.
 
 ## To update the integration
 As development happens there will be updates to the integration, so it will be good to periodically update, 
