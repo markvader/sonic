@@ -1,18 +1,16 @@
 # Home Assistant Sonic custom integration
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 
-This is an beta version of a custom integration for Sonic smart water shutoff valve, more features are still to be added.  Additionally I am exploring local access to the sonic device to remove the need to communicate with the cloud API.
+This is a beta version of a custom integration for Sonic smart water shutoff valve, more features are still to be added.  Additionally I am exploring local access to the sonic device to remove the need to communicate with the cloud API.
 
-It utilises the [herolabsapi python library](https://pypi.org/project/herolabsapi/) that I have
- written to interact with Sonic devices using the official Hero Labs API (cloud based).
+It utilises the [herolabsapi python library](https://pypi.org/project/herolabsapi/) that I have written to interact with Sonic devices using the official Hero Labs API (cloud based).
 
 # Integration Development
 [Full commit history](https://github.com/markvader/HAcore/tree/sonic-dev/homeassistant/components/sonic) 
 
 # Installation
 
-Ideally this will be adopted as an inbuilt integration, however while development and testing are 
-ongoing the recommended way to install `Sonic` is through [HACS](https://hacs.xyz/).
+Ideally this will be adopted as an inbuilt integration, however while development and testing are ongoing the recommended way to install `Sonic` is through [HACS](https://hacs.xyz/).
 
 ## To install it: 
 1. Open `HACS` within `Home Assistant`
@@ -20,8 +18,7 @@ ongoing the recommended way to install `Sonic` is through [HACS](https://hacs.xy
 3. Search for `Sonic by markvader` then click on the `download` button
 4. Select the latest version (or latest beta version) and download
 5. Then `restart Home Assistant`
-6. Go to `Settings` / `Devices & Services (Integrations Tab)` / `Add Integration` 
-and search for `Sonic (Hero Labs)` then follow the configuration steps below
+6. Go to `Settings` / `Devices & Services (Integrations Tab)` / `Add Integration` and search for `Sonic (Hero Labs)` then follow the configuration steps below
 
 ## Configuration
 
@@ -37,6 +34,5 @@ As development happens there will be updates to the integration, so it will be g
 3. Click the 3 dots on the lower right corner and click "Redownload"
 
 # How you can help?
-Please file issues within the [github repository](https://github.com/markvader/sonic_hacs/issues) for anything 
-that you think could be broken, is broken, could be improved or is a requested feature.
+Please file issues within the [github repository](https://github.com/markvader/sonic_hacs/issues) for anything that you think could be broken, is broken, could be improved or is a requested feature.
 
