@@ -15,7 +15,7 @@ Ideally this will be adopted as an inbuilt integration, however while developmen
 ## To install it: 
 1. Open `HACS` within `Home Assistant`
 2. Click the `Integrations` section, then `Explore and Download Repositories` button.
-3. Search for `Sonic by markvader` then click on the `download` button
+3. Search for `Sonic` then click on the `download` button
 4. Select the latest version (or latest beta version) and download
 5. Then `restart Home Assistant`
 6. Go to `Settings` / `Devices & Services (Integrations Tab)` / `Add Integration` and search for `Sonic (Hero Labs)` then follow the configuration steps below
@@ -30,7 +30,7 @@ Ideally this will be adopted as an inbuilt integration, however while developmen
 As development happens there will be updates to the integration, so it will be good to periodically update, 
 ## In HACS:
 1. Click on Integrations, 
-2. Scroll down and find the "Sonic (Beta) by @markvader"
+2. Scroll down and find the "Sonic"
 3. Click the 3 dots on the lower right corner and click "Redownload"
 
 # How you can help?
