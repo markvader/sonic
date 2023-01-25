@@ -29,7 +29,7 @@ class SonicDeviceDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             LOGGER,
             name=f"{SONIC_DOMAIN}-{device_id}",
-            update_interval=timedelta(seconds=60),
+            update_interval=timedelta(seconds=120),
         )
 
     async def _async_update_data(self):
