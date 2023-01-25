@@ -30,7 +30,7 @@ class PropertyDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             LOGGER,
             name=f"{SONIC_DOMAIN}-{property_id}",
-            update_interval=timedelta(seconds=60),
+            update_interval=timedelta(seconds=3600),
         )
 
     async def _async_update_data(self):
