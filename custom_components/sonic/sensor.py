@@ -164,7 +164,6 @@ class SonicTelemetryTime(SonicEntity, SensorEntity):
 
     _attr_icon = TIMER_ICON
     _attr_device_class = SensorDeviceClass.TIMESTAMP
-    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
