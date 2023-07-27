@@ -146,7 +146,7 @@ class SonicBatterySensor(SonicEntity, SensorEntity):
 
     _attr_icon = BATTERY_ICON
     _attr_native_unit_of_measurement = "battery"
-    _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
+    _attr_state_class: SensorStateClass = SensorStateClass.None
 
     def __init__(self, device):
         """Initialize the battery sensor."""
