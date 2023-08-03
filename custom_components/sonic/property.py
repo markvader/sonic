@@ -126,6 +126,15 @@ class PropertyDataUpdateCoordinator(DataUpdateCoordinator):
         """Return True if the radio disconnection notification is enabled at property."""
         return self._property_notification_settings["radio_disconnection"]
 
+    @property
+    def property_legionella_check(self) -> bool:
+        """Return True if the legionella check notification is enabled at property."""
+        return self._property_notification_settings["legionella_risk"]
+
+    @property
+    def property_low_water_temperature_check(self) -> bool:
+        """Return True if the low water temperature notification is enabled at property."""
+        return self._property_notification_settings["low_water_temperature"]
 
     async def _update_property(self, *_) -> None:
         """Update the property information from the API."""

@@ -12,10 +12,11 @@ from .device import SonicDeviceDataUpdateCoordinator
 from .property import PropertyDataUpdateCoordinator
 from .entity import SonicEntity, PropertyEntity
 
+
 async def async_setup_entry(
-    hass: HomeAssistant,
-    config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the Sonic switches from config entry."""
     devices: list[SonicDeviceDataUpdateCoordinator] = hass.data[SONIC_DOMAIN][
@@ -42,6 +43,8 @@ async def async_setup_entry(
                 PressureTestFailedAlert(property),
                 PressureTestSkippedAlert(property),
                 RadioDisconnectionAlert(property),
+                LegionellaCheckAlert(property),
+                LowWaterTemperatureAlert(property),
             ]
         )
 
@@ -159,13 +162,15 @@ class PressureTestsEnabled(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Pressure Tests Enabled Function"""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, {'pressure_tests_enabled': True})
+        await self._device.api_client.property.async_update_property_settings(self._device.id,
+                                                                              {'pressure_tests_enabled': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Pressure Tests Enabled Function"""
-        await self._device.api_client.property.async_update_property_settings(self._device.id, {'pressure_tests_enabled': False})
+        await self._device.api_client.property.async_update_property_settings(self._device.id,
+                                                                              {'pressure_tests_enabled': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -204,13 +209,15 @@ class CloudDisconnectionAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'cloud_disconnection': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'cloud_disconnection': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'cloud_disconnection': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'cloud_disconnection': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -249,13 +256,15 @@ class LowBatteryLevelAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'low_battery_level': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'low_battery_level': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'low_battery_level': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'low_battery_level': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -263,6 +272,100 @@ class LowBatteryLevelAlert(PropertyEntity, SwitchEntity):
     def async_update_state(self) -> None:
         """Retrieve the latest switch state and update the state machine."""
         self._state = self._device.property_low_battery_level == True
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        """When entity is added to hass."""
+        self.async_on_remove(self._device.async_add_listener(self.async_update_state))
+
+
+class LegionellaCheckAlert(PropertyEntity, SwitchEntity):
+    """Switch class for the Property Legionella Check Alert."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, device: PropertyDataUpdateCoordinator) -> None:
+        """Initialize the Property legionella_check Alert switch."""
+        super().__init__("legionella_check_alert", "Alerts - Legionella Check", device)
+        self._state = self._device.property_legionella_check == True
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if the Alert is enabled."""
+        return self._state
+
+    @property
+    def icon(self):
+        """Return the icon to use for the switch."""
+        if self.is_on:
+            return "mdi:bell"
+        return "mdi:bell-off"
+
+    async def async_turn_on(self, **kwargs) -> None:
+        """Turn on the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'legionella_risk': True})
+        self._state = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        """Turn off the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'legionella_risk': False})
+        self._state = False
+        self.async_write_ha_state()
+
+    @callback
+    def async_update_state(self) -> None:
+        """Retrieve the latest switch state and update the state machine."""
+        self._state = self._device.property_legionella_check == True
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        """When entity is added to hass."""
+        self.async_on_remove(self._device.async_add_listener(self.async_update_state))
+
+
+class LowWaterTemperatureAlert(PropertyEntity, SwitchEntity):
+    """Switch class for the Property Low Water Temperature Alert."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, device: PropertyDataUpdateCoordinator) -> None:
+        """Initialize the Property Low Water Temperature Alert switch."""
+        super().__init__("low_water_temperature_alert", "Alerts - Low Water Temperature", device)
+        self._state = self._device.property_low_water_temperature_check == True
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if the Alert is enabled."""
+        return self._state
+
+    @property
+    def icon(self):
+        """Return the icon to use for the switch."""
+        if self.is_on:
+            return "mdi:bell"
+        return "mdi:bell-off"
+
+    async def async_turn_on(self, **kwargs) -> None:
+        """Turn on the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'low_water_temperature': True})
+        self._state = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        """Turn off the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'low_water_temperature': False})
+        self._state = False
+        self.async_write_ha_state()
+
+    @callback
+    def async_update_state(self) -> None:
+        """Retrieve the latest switch state and update the state machine."""
+        self._state = self._device.property_low_water_temperature_check == True
         self.async_write_ha_state()
 
     async def async_added_to_hass(self):
@@ -294,13 +397,15 @@ class DeviceHandleMovedAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'device_handle_moved': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'device_handle_moved': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'device_handle_moved': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'device_handle_moved': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -339,13 +444,15 @@ class HealthCheckFailedAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'health_check_failed': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'health_check_failed': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'health_check_failed': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'health_check_failed': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -384,13 +491,15 @@ class PressureTestFailedAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'pressure_test_failed': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'pressure_test_failed': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'pressure_test_failed': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'pressure_test_failed': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -429,13 +538,15 @@ class PressureTestSkippedAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'pressure_test_skipped': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'pressure_test_skipped': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'pressure_test_skipped': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'pressure_test_skipped': False})
         self._state = False
         self.async_write_ha_state()
 
@@ -474,13 +585,15 @@ class RadioDisconnectionAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'radio_disconnection': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'radio_disconnection': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'radio_disconnection': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id,
+                                                                                   {'radio_disconnection': False})
         self._state = False
         self.async_write_ha_state()
 
