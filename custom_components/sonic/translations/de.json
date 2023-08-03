@@ -1,0 +1,24 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Gerät ist bereits konfiguriert"
+    },
+    "error": {
+      "cannot_connect": "Verbindung nicht möglich",
+      "invalid_auth": "Ungültige Authentifizierung",
+      "unknown": "Unerwarteter Fehler"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "password": "Passwort",
+          "username": "Nutzername"
+        },
+        "data_description": {
+          "username": "Hero Labs-Benutzername, normalerweise eine E-Mail-Adresse."
+        },
+        "description": "Melden Sie sich bei Ihrem Hero Labs-Konto an."
+      }
+    }
+  }
+}
