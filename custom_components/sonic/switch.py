@@ -295,13 +295,13 @@ class LegionellaCheckAlert(PropertyEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn on the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_check_failed': True})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_risk': True})
         self._state = True
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn off the Alert"""
-        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_check_failed': False})
+        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_risk': False})
         self._state = False
         self.async_write_ha_state()
 
