@@ -129,7 +129,7 @@ class PropertyDataUpdateCoordinator(DataUpdateCoordinator):
     @property
     def property_legionella_check(self) -> bool:
         """Return True if the legionella check notification is enabled at property."""
-        return self._property_notification_settings["legionella_check_failed"]
+        return self._property_notification_settings["legionella_risk"]
 
     async def _update_property(self, *_) -> None:
         """Update the property information from the API."""
