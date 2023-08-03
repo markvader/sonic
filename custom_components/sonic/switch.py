@@ -42,6 +42,7 @@ async def async_setup_entry(
                 PressureTestFailedAlert(property),
                 PressureTestSkippedAlert(property),
                 RadioDisconnectionAlert(property),
+                LegionellaCheckAlert(property),
             ]
         )
 
@@ -269,6 +270,50 @@ class LowBatteryLevelAlert(PropertyEntity, SwitchEntity):
         """When entity is added to hass."""
         self.async_on_remove(self._device.async_add_listener(self.async_update_state))
 
+
+class LegionellaCheckAlert(PropertyEntity, SwitchEntity):
+    """Switch class for the Property Legionella Check Alert."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, device: PropertyDataUpdateCoordinator) -> None:
+        """Initialize the Property legionella_check Alert switch."""
+        super().__init__("legionella_check_alert", "Alerts - Legionella Check", device)
+        self._state = self._device.property_legionella_check == True
+
+    @property
+    def is_on(self) -> bool:
+        """Return True if the Alert is enabled."""
+        return self._state
+
+    @property
+    def icon(self):
+        """Return the icon to use for the switch."""
+        if self.is_on:
+            return "mdi:bell"
+        return "mdi:bell-off"
+
+    async def async_turn_on(self, **kwargs) -> None:
+        """Turn on the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_check_failed': True})
+        self._state = True
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **kwargs) -> None:
+        """Turn off the Alert"""
+        await self._device.api_client.property.async_update_property_notifications(self._device.id, {'legionella_check_failed': False})
+        self._state = False
+        self.async_write_ha_state()
+
+    @callback
+    def async_update_state(self) -> None:
+        """Retrieve the latest switch state and update the state machine."""
+        self._state = self._device.property_legionella_check == True
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        """When entity is added to hass."""
+        self.async_on_remove(self._device.async_add_listener(self.async_update_state))
 
 class DeviceHandleMovedAlert(PropertyEntity, SwitchEntity):
     """Switch class for the Device Handle Moved Alert."""
