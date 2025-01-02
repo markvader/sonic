@@ -10,11 +10,10 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    PRESSURE_BAR,
-    TEMP_CELSIUS,
-    VOLUME_LITERS,
-    TIME_MINUTES,
-    VOLUME_LITERS,
+    UnitOfPressure,
+    UnitOfTemperature,
+    UnitOfVolume,
+    UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
@@ -105,7 +104,7 @@ class SonicTemperatureSensor(SonicEntity, SensorEntity):
     """Monitors the water temperature."""
 
     _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = TEMP_CELSIUS
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
 
     def __init__(self, device):
@@ -125,7 +124,7 @@ class SonicPressureSensor(SonicEntity, SensorEntity):
     """Monitors the water pressure."""
 
     _attr_device_class = SensorDeviceClass.PRESSURE
-    _attr_native_unit_of_measurement = PRESSURE_BAR
+    _attr_native_unit_of_measurement = UnitOfPressure.BAR
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
 
     def __init__(self, device):
@@ -222,7 +221,7 @@ class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
     """Return the auto_shut_off_time_limit state"""
 
     _attr_icon = TIMER_ICON
-    _attr_native_unit_of_measurement = TIME_MINUTES
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
@@ -240,7 +239,7 @@ class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
     """Return the auto_shut_off_volume_limit state"""
 
     _attr_icon = VOLUME_ICON
-    _attr_native_unit_of_measurement = VOLUME_LITERS
+    _attr_native_unit_of_measurement = UnitOfVolume.LITERS
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, device):
@@ -257,7 +256,7 @@ class PropertyLongFlowNotificationDelay(PropertyEntity, SensorEntity):
     """Return the long flow notification delay in minutes at property"""
 
     _attr_icon = TIMER_ICON
-    _attr_native_unit_of_measurement = TIME_MINUTES
+    _attr_native_unit_of_measurement = UnitOfTime.MINUTES
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, property):
@@ -274,7 +273,7 @@ class PropertyHighVolumeNotificationThresholdLitres(PropertyEntity, SensorEntity
     """Return the high_volume_threshold_litres at property"""
 
     _attr_icon = TIMER_ICON
-    _attr_native_unit_of_measurement = VOLUME_LITERS
+    _attr_native_unit_of_measurement = UnitOfVolume.LITERS
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(self, property):
