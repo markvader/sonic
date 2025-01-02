@@ -8,5 +8,5 @@
   "issue_tracker": "https://github.com/markvader/sonic_hacs/issues",
   "loggers": ["sonic"],
   "requirements": ["herolabsapi==0.4.0"],
-  "version": "v0.2.0"
+  "version": "v0.2.1"
 }
