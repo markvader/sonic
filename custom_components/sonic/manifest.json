@@ -7,6 +7,6 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/markvader/sonic_hacs/issues",
   "loggers": ["sonic"],
-  "requirements": ["herolabsapi==0.5.0"],
+  "requirements": ["herolabsapi==0.5.1"],
   "version": "v0.2.3"
 }
