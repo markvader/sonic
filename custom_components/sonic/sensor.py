@@ -1,8 +1,7 @@
 """The Sonic Water Shut-off Valve integration."""
 from __future__ import annotations
 from datetime import datetime
-import pytz
-
+from zoneinfo import ZoneInfo
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -13,6 +12,7 @@ from homeassistant.const import (
     UnitOfPressure,
     UnitOfTemperature,
     UnitOfVolume,
+    UnitOfVolumeFlowRate,
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
@@ -80,18 +80,18 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
+
+SONIC_TIMEZONE = ZoneInfo("Europe/London")
 class SonicCurrentFlowRateSensor(SonicEntity, SensorEntity):
     """Monitors the current water flow rate."""
 
     _attr_icon = GAUGE_ICON
-    _attr_native_unit_of_measurement = "litres per min"
+    _attr_native_unit_of_measurement = UnitOfVolumeFlowRate.LITERS_PER_MINUTE
     _attr_state_class: SensorStateClass = SensorStateClass.MEASUREMENT
 
     def __init__(self, device):
         """Initialize the flow rate sensor."""
         super().__init__("current_flow_rate", NAME_FLOW_RATE, device)
-        self._state: float = None
-
     @property
     def native_value(self) -> float | None:
         """Return the current flow rate in Litre per minute."""
@@ -110,8 +110,6 @@ class SonicTemperatureSensor(SonicEntity, SensorEntity):
     def __init__(self, device):
         """Initialize the temperature sensor."""
         super().__init__("temperature", NAME_WATER_TEMPERATURE, device)
-        self._state: float = None
-
     @property
     def native_value(self) -> float | None:
         """Return the current temperature."""
@@ -130,8 +128,6 @@ class SonicPressureSensor(SonicEntity, SensorEntity):
     def __init__(self, device):
         """Initialize the water pressure sensor."""
         super().__init__("water_pressure", NAME_WATER_PRESSURE, device)
-        self._state: float = None
-
     @property
     def native_value(self) -> float | None:
         """Return the current water pressure in bar."""
@@ -153,7 +149,7 @@ class SonicBatterySensor(SonicEntity, SensorEntity):
         self._state: str = None
 
     @property
-    def native_value(self) -> str | None:
+    def native_value(self) -> datetime | None:
         """Return the current battery state."""
         return self._device.battery_state
 
@@ -174,10 +170,11 @@ class SonicTelemetryTime(SonicEntity, SensorEntity):
     def native_value(self) -> str | None:
         """Return the current telemetry time state."""
         telemetry_timestamp = self._device.last_heard_from_time
-        # telemetry_timezone = self._device.property_timezone
-        timezone = pytz.timezone("Europe/London")
-        telemetry_datetime = datetime.fromtimestamp(telemetry_timestamp, timezone)
-        return telemetry_datetime
+
+        if telemetry_timestamp is None:
+            return None
+
+        return datetime.fromtimestamp(telemetry_timestamp, SONIC_TIMEZONE)
 
 
 class SonicValveStateSensor(SonicEntity, SensorEntity):
@@ -232,7 +229,8 @@ class SonicAutoShutOffTimeLimitSensor(SonicEntity, SensorEntity):
     @property
     def native_value(self) -> int | None:
         """Return the auto_shut_off_time_limit state in minutes."""
-        return round((self._device.auto_shut_off_time_limit)/60)
+        val = self._device.auto_shut_off_time_limit
+        return round(val / 60) if val is not None else None
 
 
 class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
@@ -250,7 +248,8 @@ class SonicAutoShutOffVolumeLimitSensor(SonicEntity, SensorEntity):
     @property
     def native_value(self) -> int | None:
         """Return the auto_shut_off_volume_limit state."""
-        return round((self._device.auto_shut_off_volume_limit)/1000)
+        val = self._device.auto_shut_off_volume_limit
+        return round(val / 1000) if val is not None else None
 
 class PropertyLongFlowNotificationDelay(PropertyEntity, SensorEntity):
     """Return the long flow notification delay in minutes at property"""

@@ -5,7 +5,6 @@ import asyncio
 from datetime import timedelta
 from typing import Any
 
-from async_timeout import timeout
 from herolabsapi.client import Client
 from herolabsapi.errors import RequestError
 
@@ -36,12 +35,8 @@ class PropertyDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            async with timeout(10):
-                await asyncio.gather(
-                    *[
-                        self._update_property(),
-                    ]
-                )
+            async with asyncio.timeout(10):
+                await self._update_property()
         except (RequestError) as error:
             raise UpdateFailed(error) from error
 
