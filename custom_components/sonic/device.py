@@ -5,7 +5,6 @@ import asyncio
 from datetime import timedelta
 from typing import Any
 
-from async_timeout import timeout
 from herolabsapi.client import Client
 from herolabsapi.errors import RequestError
 
@@ -35,12 +34,8 @@ class SonicDeviceDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            async with timeout(10):
-                await asyncio.gather(
-                    *[
-                        self._update_device(),
-                    ]
-                )
+            async with asyncio.timeout(10):
+                await self._update_device()
         except (RequestError) as error:
             raise UpdateFailed(error) from error
 
@@ -111,19 +106,19 @@ class SonicDeviceDataUpdateCoordinator(DataUpdateCoordinator):
     @property
     def auto_shut_off_enabled(self) -> bool:
         """Return the auto shut off enabled boolean"""
-        return self._device_information["auto_shut_off_enabled"]
+        return self._device_information.get("auto_shut_off_enabled")
 
     @property
     def auto_shut_off_time_limit(self) -> int:
         """Return the Sonic offline auto shut off water usage time limit in seconds[0;integer::max).
         When set to 0 usage time check is not performed."""
-        return self._device_information["auto_shut_off_time_limit"]
+        return self._device_information.get("auto_shut_off_time_limit")
 
     @property
     def auto_shut_off_volume_limit(self) -> int:
         """Return the Sonic offline auto shut off used water volume limit in millilitres [0;integer::max).
         When set to 0 volume used check is not performed."""
-        return self._device_information["auto_shut_off_volume_limit"]
+        return self._device_information.get("auto_shut_off_volume_limit")
 
     @property
     def signal_id(self) -> str:

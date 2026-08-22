@@ -90,7 +90,7 @@ class PropertyEntity(Entity):
 
     async def async_update(self):
         """Update Property entity."""
-        await self._property.async_request_refresh()
+        await self._device.async_request_refresh()
 
     async def async_added_to_hass(self):
         """When entity is added to hass."""
